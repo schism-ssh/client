@@ -1,0 +1,29 @@
+default:
+  image: img.doom.fm/build/golang:latest-1.14.2-buster
+  tags:
+    - schism-ci-cd
+
+stages:
+  - pre-flight
+  - testing
+
+go-fmt-vet:
+  stage: pre-flight
+  before_script:
+    - go mod vendor
+  script:
+    - go fmt ./...
+    - go vet ./...
+  artifacts:
+    paths:
+      - vendor/
+    expire_in: 1 hour
+
+go-test-cover:
+  stage: testing
+  before_script:
+    - go mod vendor
+  script:
+    - go test -cover -test.v ./...
+  dependencies:
+    - go-fmt-vet
